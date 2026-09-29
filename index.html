@@ -355,7 +355,7 @@
         .cover-content .label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--color-dark); font-weight: 600; }
         .cover-content .couple { font-family: 'Baskerville Display PT', serif; /* font-style: italic; */ font-size: 3.5rem; color: var(--color-dark); line-height: 1; }
         .cover-content .cover-date { font-size: 13px; font-weight: 700; color: var(--color-dark); margin-top: 0.75rem; }
-        .cover-logo { position: absolute; top: 4rem; left: 50%; z-index: 2; width: 212px; max-width: 46%; height: auto; transform: translateX(-50%); }
+        .cover-logo { position: relative; z-index: 2; display: block; flex-shrink: 0; width: clamp(140px, 48vw, 260px); max-width: 70%; height: auto; margin: 0 auto 1.5rem; }
 
         /* Countdown */
         .countdown-wrap { position: relative; z-index: 2; margin: 1.5rem 0; display: flex; justify-content: center; gap: 0.5rem; }
