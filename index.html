@@ -1530,6 +1530,7 @@
     // ========== OPEN INVITATION ==========
     document.getElementById('btnOpenInvitation').addEventListener('click', function () {
         const overlay = document.getElementById('modalInvitation');
+        document.getElementById('cover-kepada').style.display = 'none';
         overlay.style.transition = 'opacity 0.6s';
         overlay.style.opacity = '0';
         setTimeout(() => {
