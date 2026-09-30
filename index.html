@@ -278,6 +278,12 @@
             color: var(--color-dark);
             line-height: 1.1;
         }
+        .modal-content-inner .couple-logo {
+            display: block;
+            width: min(280px, 82%);
+            height: auto;
+            margin: 0 auto;
+        }
         .modal-content-inner .date-text { font-size: 13px; font-weight: 700; color: var(--color-dark); margin-top: 0.5rem; }
         .modal-content-inner .kepada { margin-top: 1.5rem; font-size: 12px; color: var(--color-medium); }
         .modal-content-inner .guest-name { font-size: 16px; font-weight: 700; color: var(--color-dark); }
@@ -363,6 +369,7 @@
         .cover-content { position: relative; z-index: 2; width: 100%; }
         .cover-content .label { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--color-dark); font-weight: 600; }
         .cover-content .couple { font-family: 'Baskerville Display PT', serif; /* font-style: italic; */ font-size: 3.5rem; color: var(--color-dark); line-height: 1; }
+        .cover-content .couple-logo { width: min(300px, 82%); height: auto; margin: 0 auto; }
         .cover-content .cover-date { font-size: 13px; font-weight: 700; color: var(--color-dark); margin-top: 0.75rem; }
         .cover-logo {
             position: relative;
@@ -1095,7 +1102,7 @@
         <img class="modal-logo" src="svg/logo.svg" alt="Logo Anggri dan Syawallani">
         <div class="modal-content-inner">
             <div class="the-wedding">THE WEDDING OF</div>
-            <div class="couple-name">Anggri<br>&amp; Syawallani</div>
+            <img class="couple-logo" src="svg/Anggri%20%26%20Syawal.svg" alt="Anggri dan Syawal">
             <div class="date-text">Senin, 01 Juni 2027</div>
             <div class="kepada" id="modal-kepada">Kepada Yth.</div>
             <div class="guest-name" id="modal-guest">Tamu Undangan</div>
@@ -1123,7 +1130,7 @@
             </div>
             <div class="cover-content" data-aos="fade-up">
                 <div class="label">The Wedding of</div>
-                <div class="couple">Anggri<br>&amp; Syawallani</div>
+                <img class="couple couple-logo" src="svg/Anggri%20%26%20Syawal.svg" alt="Anggri dan Syawal">
                 <div class="cover-date">Senin · 01 Juni 2027</div>
             </div>
             <div class="countdown-wrap" id="countdown"></div>
