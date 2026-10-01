@@ -194,10 +194,15 @@
         }
 
         @media (min-width: 768px) {
-            .backdrop-panel { display: flex; }
+            .backdrop-panel {
+                display: flex;
+                width: 100%;
+                background: linear-gradient(135deg, #DDE5CA 0%, #F5F3EA 52%, #D6DCC0 100%);
+            }
             .content-column {
-                margin-left: 66.666%;
-                width: 33.333%;
+                width: 100%;
+                max-width: 450px;
+                margin: 0 auto;
             }
         }
 
@@ -210,7 +215,7 @@
             z-index: 8000;
             display: flex;
             align-items: stretch;
-            justify-content: flex-end;
+            justify-content: center;
             background: transparent;
             transition: opacity 0.5s;
         }
@@ -236,8 +241,8 @@
         }
 
         @media (min-width: 768px) {
-            .modal-left { display: flex; align-items: center; justify-content: center; }
-            .modal-right { width: 33.333%; }
+            .modal-left { display: none; }
+            .modal-right { width: 100%; max-width: 450px; }
         }
 
         /* Animated BG in modal right */
@@ -912,7 +917,7 @@
         .navbar-bottom {
             position: fixed; bottom: 0; left: 0; right: 0;
             z-index: 7000;
-            display: flex; justify-content: flex-end;
+            display: flex; justify-content: center;
         }
         .navbar-inner {
             background: var(--color-overlay);
@@ -926,7 +931,8 @@
         }
         @media (min-width: 768px) {
             .navbar-inner {
-                width: 33.333%;
+                width: 100%;
+                max-width: 450px;
                 justify-content: center;
             }
         }
@@ -1073,11 +1079,11 @@
         <li class="firefly"></li><li class="firefly"></li><li class="firefly"></li>
         <li class="firefly"></li><li class="firefly"></li>
     </div>
-    <div class="backdrop-text">
+    <!-- <div class="backdrop-text">
         <div class="sub" style="font-size:12px;">The Wedding of</div>
         <div class="main">Anggri<br>&amp;<br>Syawallani</div>
         <div class="sub" style="margin-top:1rem; font-size:12px;">01 Juni 2027</div>
-    </div>
+    </div> -->
 </div>
 
 <!-- =============================================
@@ -1086,12 +1092,12 @@
 <div class="modal-overlay" id="modalInvitation">
     <div class="modal-left">
         <!-- Same backdrop as panel -->
-        <div style="width:100%;height:100%;background:linear-gradient(to right,rgba(213,220,190,1),rgba(245,243,234,0.8));display:flex;align-items:center;justify-content:center;">
+        <!-- <div style="width:100%;height:100%;background:linear-gradient(to right,rgba(213,220,190,1),rgba(245,243,234,0.8));display:flex;align-items:center;justify-content:center;">
             <div style="text-align:center;color:var(--color-dark);">
                 <div style="font-size:12px;letter-spacing:4px;text-transform:uppercase;opacity:0.7;">The Wedding of</div>
                 <div style="font-family:'Baskerville Display PT',serif;font-style:italic;font-size:4rem;font-weight:600;line-height:1.1;">Anggri<br>&amp;<br>Syawallani</div>
             </div>
-        </div>
+        </div> -->
     </div>
     <div class="modal-right">
         <div class="modal-bg-slider">
