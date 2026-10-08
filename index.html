@@ -4,10 +4,13 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content="Undangan Pernikahan Anggri Liani & Syawallani - 01 Juni 2027"/>
-    <title>Anggri & Syawallani | Undangan Pernikahan</title>
+    <title>Anggri & Syawal | Undangan Pernikahan</title>
 
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Amiri Arabic font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri&display=swap">
 
     <!-- AOS Animation -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -418,6 +421,7 @@
             text-align: center;
         }
         .quote-section .ayat-arabic {
+            font-family: 'Amiri', serif;
             font-size: 1.6rem;
             line-height: 2.2;
             color: var(--color-dark);
@@ -458,6 +462,7 @@
             background: var(--tone-color-2);
             text-align: center;
             padding: 3rem 2rem;
+            border-radius: 0 0 10px 10px;
         }
         .opening-msg { color: var(--color-dark); font-size: 13px; line-height: 1.9; margin-bottom: 2rem; }
         .opening-msg .bismillah { font-size: 1.4rem; display: block; margin-bottom: 0.5rem; color: var(--color-primary); }
@@ -512,7 +517,8 @@
            ============================================ */
         .schedule-section {
             background: #fff;
-            padding: 0 0 3rem;
+            padding: 0.5rem 0;
+            border-radius: 10px 10px 0 0;
         }
 
         /* Vertical image slider */
@@ -630,9 +636,126 @@
         .btn-map:hover { background: var(--color-dark); }
 
         /* ============================================
+           DRESS CODE
+           ============================================ */
+        .dresscode-section {
+            background: var(--color-bg-light);
+            /* border: 1px solid var(--color-light-sage);
+            border-bottom: 0; */
+            /* border-radius: 225px 225px 0 0; */
+            /* margin-top: 2rem; */
+            padding: 3.5rem 1.5rem 2.5rem;
+            text-align: center;
+        }
+        .dresscode-title {
+            color: var(--color-dark);
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            margin-bottom: 1.5rem;
+        }
+        .dresscode-note {
+            max-width: 340px;
+            margin: 0 auto;
+            color: var(--color-medium);
+            font-size: 14px;
+            font-style: italic;
+            line-height: 1.8;
+        }
+        .dresscode-colors {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+            max-width: 280px;
+            margin: 1.8rem auto;
+        }
+        .dresscode-swatch { min-width: 0; color: var(--color-text-light); font-size: 10px; }
+        .dresscode-chip {
+            display: block;
+            width: 68px;
+            aspect-ratio: 1;
+            margin: 0 auto 0.5rem;
+            border: 1px solid rgba(61, 74, 32, 0.12);
+            border-radius: 14px;
+            box-shadow: 0 2px 6px rgba(61, 74, 32, 0.08);
+        }
+        .dresscode-chip.cream { background: #F5F3EA; }
+        .dresscode-chip.soft-khaki { background: #C6C1B3; }
+        .dresscode-chip.earthy-taupe { background: #998B80; }
+        .dresscode-divider {
+            width: 60px;
+            height: 1px;
+            margin: 0 auto 1.5rem;
+            background: var(--color-light-sage);
+        }
+        .dresscode-description {
+            max-width: 340px;
+            margin: 0 auto;
+            color: var(--color-text-light);
+            font-size: 12px;
+            line-height: 1.8;
+        }
+
+        /* ============================================
            LOVE STORY
            ============================================ */
-        .story-section { background: var(--tone-color-2); padding: 3rem 1.5rem; }
+        .couple-quote-section {
+            aspect-ratio: 2 / 1;
+            /* background: var(--color-white); */
+            /* border: 1px solid var(--color-light-sage); */
+            /* border-bottom: 0;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0; */
+
+            background: var(--color-bg-light);
+            border: 1px solid var(--color-light-sage);
+            border-bottom: 0;
+            border-radius: 225px 225px 0 0;
+            margin-top: 2rem;
+            display: grid;
+            place-items: center;
+            /* margin: 0; */
+            padding: 1rem 3rem 0;
+            text-align: center;
+        }
+        .couple-quote {
+            font-family: 'Baskerville Display PT', serif;
+            font-size: 1.35rem;
+            font-style: italic;
+            line-height: 1.4;
+            color: var(--color-dark);
+        }
+        .couple-quote::before {
+            content: '“';
+            display: block;
+            color: var(--color-sage);
+            font-size: 2.6rem;
+            font-style: normal;
+            line-height: 0.8;
+            margin-bottom: 0.5rem;
+        }
+        .couple-quote::after {
+            content: '';
+            display: block;
+            width: 42px;
+            height: 1px;
+            margin: 0.8rem auto 0;
+            background: var(--color-light-sage);
+        }
+        .story-section { 
+            background: var(--color-bg-light); 
+            padding: 1rem 1rem 3rem; 
+            border: 1px solid var(--color-light-sage);
+            border-top: 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 10px 10px;
+        }
+        .story-section .section-title {
+            font-size: 1.1rem;
+            font-weight: 400;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
         .section-title {
             font-family: 'Baskerville Display PT', serif;
             /* font-style: italic; */
@@ -641,23 +764,21 @@
             text-align: center;
             margin-bottom: 2rem;
         }
-
-        .story-card {
-            border-radius: 40px 0 40px 0;
-            overflow: hidden;
-            box-shadow: 0 0 12px rgba(61, 74, 32, 0.12);
-            margin-bottom: 2rem;
+        .story-timeline {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.6rem;
         }
-        .story-card-img {
-            width: 100%; height: 200px;
-            background: var(--color-card);
-            display: flex; align-items: center; justify-content: center;
-            color: var(--color-sage); font-size: 2.5rem;
+        .story-milestone {
+            min-width: 0;
+            padding: 1rem 0.75rem;
+            border: 1px solid var(--color-light-sage);
+            border-radius: 14px;
+            background: var(--color-bg-light);
         }
-        .story-card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .story-card-body { padding: 1.5rem 2rem; }
-        .story-card-body h4 { font-weight: 700; font-size: 14px; color: var(--color-dark); margin-bottom: 0.5rem; }
-        .story-card-body p { font-size: 12px; color: var(--color-medium); line-height: 1.7; }
+        .story-year { color: var(--color-medium); font-size: 10px; font-weight: 700; }
+        .story-milestone h3 { margin: 0.45rem 0; color: var(--color-dark); font-size: 1rem; line-height: 1.35; }
+        .story-milestone p { color: var(--color-medium); font-size: 12px; line-height: 1.65; }
 
         /* ============================================
            GALLERY
@@ -923,8 +1044,8 @@
             background: var(--color-overlay);
             backdrop-filter: blur(10px);
             border-radius: 20px 20px 0 0;
-            padding: 0.6rem 1.5rem;
-            display: flex; gap: 0.5rem;
+            padding: 0.45rem 0.25rem;
+            display: flex;
             box-shadow: 0 -4px 20px rgba(61, 74, 32, 0.15);
             width: 100%;
             justify-content: center;
@@ -933,18 +1054,25 @@
             .navbar-inner {
                 width: 100%;
                 max-width: 450px;
-                justify-content: center;
             }
         }
+        .nav-item { flex: 1; min-width: 0; }
         .nav-item a {
             display: flex; flex-direction: column; align-items: center;
-            padding: 0.4rem 0.8rem;
+            justify-content: center;
+            gap: 0.15rem;
+            min-height: 48px;
+            padding: 0.35rem 0.1rem;
             border-radius: 12px;
             color: var(--color-medium);
             text-decoration: none;
-            font-size: 1.2rem;
+            font-size: 9px;
+            line-height: 1.2;
+            text-align: center;
+            white-space: nowrap;
             transition: all 0.3s;
         }
+        .nav-item a i { font-size: 1.05rem; line-height: 1; }
         .nav-item a:hover, .nav-item a.active {
             background: var(--color-primary);
             color: #fff;
@@ -1105,7 +1233,7 @@
             <div class="modal-bg-slide bg-slide-2"></div>
             <div class="modal-bg-gradient"></div>
         </div>
-        <img class="modal-logo" src="svg/logo.svg" alt="Logo Anggri dan Syawallani">
+        <img class="modal-logo" src="svg/logo.svg" alt="Logo Anggri dan Syawal">
         <div class="modal-content-inner">
             <div class="the-wedding">THE WEDDING OF</div>
             <img class="couple-logo" src="svg/AnggriSyawal.svg" alt="Anggri dan Syawal">
@@ -1129,7 +1257,7 @@
         <!-- =========== COVER =========== -->
         <section class="cover-section" id="cover-section">
             <div class="arch-hero"></div>
-            <img class="cover-logo" src="svg/logo.svg" alt="Logo Anggri dan Syawallani">
+            <img class="cover-logo" src="svg/logo.svg" alt="Logo Anggri dan Syawal">
             <div class="bg-slider-container">
                 <div class="bg-slide bg-slide-1"></div>
                 <div class="bg-slide bg-slide-2"></div>
@@ -1150,7 +1278,7 @@
         <section id="bride">
             <div class="quote-section" data-aos="fade-up">
                 <div class="ayat-arabic">
-                    وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُمْ مِنْ أَنفُسِكُمْ أَزْوَاجًا لِتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَوَدَّةً وَرَحْمَةً
+                    وَمِنْ آَيَاتِهِ أَنْ خَلَقَ لَكُمْ مِنْ أَنْفُسِكُمْ أَزْوَاجًا لِتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُمْ مَوَدَّةً وَرَحْمَةً إِنَّ فِي ذَلِكَ لَآَيَاتٍ لِقَوْمٍ يَتَفَكَّرُونَ
                 </div>
                 <div class="ayat-latin">
                     And of His signs is that He created for you from yourselves mates that you may find tranquillity in them and He placed between you affection and mercy. Indeed in that are signs for a people who give thought.
@@ -1212,6 +1340,33 @@
             </div>
         </section>
 
+        <!-- =========== COUPLE QUOTE =========== -->
+        <section class="couple-quote-section" data-aos="fade-up">
+            <blockquote class="couple-quote">“Some stories are destined for a beautiful new chapter.”</blockquote>
+        </section>
+
+        <!-- =========== LOVE STORY =========== -->
+        <section class="story-section">
+            <div class="section-title" data-aos="fade-up">Our Love Story</div>
+            <div class="story-timeline">
+                <article class="story-milestone" data-aos="fade-up">
+                    <div class="story-year">2014</div>
+                    <h3>High School Friends</h3>
+                    <p>Kisah ini bermula dari pertemanan semasa SMA, ditemani canda dan kebersamaan.</p>
+                </article>
+                <article class="story-milestone" data-aos="fade-up">
+                    <div class="story-year">2016 - 2025</div>
+                    <h3>9 Long Years</h3>
+                    <p>Jarak dan waktu menguji komitmen, sementara kedewasaan menuntun mereka kembali untuk melangkah bersama.</p>
+                </article>
+                <article class="story-milestone" data-aos="fade-up">
+                    <div class="story-year">1 Juni 2027</div>
+                    <h3>A New Chapter</h3>
+                    <p>Memulai perjalanan seumur hidup dalam ikatan pernikahan, bersama keluarga dan orang-orang terkasih.</p>
+                </article>
+            </div>
+        </section>
+
         <!-- =========== SCHEDULE =========== -->
         <section id="schedule" class="schedule-section">
             
@@ -1264,39 +1419,26 @@
             </div>
         </section>
 
-        <!-- =========== LOVE STORY =========== -->
-        <section class="story-section">
-            <div class="section-title" data-aos="fade-up">Kisah Cinta</div>
-
-            <!-- Story 1 -->
-            <div data-aos="fade-up">
-                <div style="height:6px;width:40%;background:var(--color-primary);border-radius:0 0 6px 6px;margin-left:auto;margin-bottom:0;"></div>
-                <div class="story-card">
-                    <div class="story-card-img">
-                        <i class="bi bi-heart-fill"></i>
-                    </div>
-                    <div class="story-card-body">
-                        <h4>Pertemuan Pertama</h4>
-                        <p>Kisah indah ini bermula dari sebuah pertemuan yang sederhana namun penuh makna. Saat pandangan pertama bertemu, ada rasa yang tak bisa diungkapkan dengan kata-kata.</p>
-                    </div>
+        <!-- =========== DRESS CODE =========== -->
+        <section class="dresscode-section" id="dresscode" data-aos="fade-up">
+            <h2 class="dresscode-title">DRESS CODE</h2>
+            <p class="dresscode-note">“Your presence is the only present we need. If you'd like to dress up with us, we kindly suggest wearing semi-formal attire in our wedding color palette:”</p>
+            <div class="dresscode-colors" aria-label="Palet warna busana">
+                <div class="dresscode-swatch">
+                    <span class="dresscode-chip cream"></span>
+                    <span>CREAM</span>
                 </div>
-                <div style="height:6px;width:40%;background:var(--color-light-sage);border-radius:6px 6px 0 0;margin-bottom:1.5rem;"></div>
-            </div>
-
-            <!-- Story 2 -->
-            <div data-aos="fade-up">
-                <div style="height:6px;width:40%;background:var(--color-primary);border-radius:0 0 6px 6px;margin-left:auto;margin-bottom:0;"></div>
-                <div class="story-card">
-                    <div class="story-card-img">
-                        <i class="bi bi-gem"></i>
-                    </div>
-                    <div class="story-card-body">
-                        <h4>Lamaran</h4>
-                        <p>Tak disangka, cerita ini semakin erat untuk memperkokoh niat beribadah. Dengan penuh keyakinan dan restu keluarga, prosesi lamaran pun dilaksanakan dengan penuh rasa syukur.</p>
-                    </div>
+                <div class="dresscode-swatch">
+                    <span class="dresscode-chip soft-khaki"></span>
+                    <span>SOFT KHAKI</span>
                 </div>
-                <div style="height:6px;width:40%;background:var(--color-light-sage);border-radius:6px 6px 0 0;margin-bottom:1.5rem;"></div>
+                <div class="dresscode-swatch">
+                    <span class="dresscode-chip earthy-taupe"></span>
+                    <span>EARTHY TAUPE</span>
+                </div>
             </div>
+            <div class="dresscode-divider"></div>
+            <p class="dresscode-description">Disarankan mengenakan pakaian semi-formal bernuansa warna di atas agar foto kebersamaan kita semakin harmonis dan berkesan.</p>
         </section>
 
         <!-- =========== GALLERY =========== -->
@@ -1381,7 +1523,7 @@
             </div>
         </section>
 
-        <!-- =========== IG STORY =========== -->
+        <!-- =========== IG STORY ===========
         <section class="ig-section">
             <div class="ig-card" data-aos="fade-up">
                 <div style="position:absolute;top:-3px;left:0;width:60%;height:6px;background:var(--color-primary);border-radius:0 0 6px 6px;"></div>
@@ -1397,7 +1539,7 @@
                     </div>
                 </button>
             </div>
-        </section>
+        </section> -->
 
         <!-- =========== CLOSING =========== -->
         <section id="closing" class="closing-section">
@@ -1428,15 +1570,15 @@
                 <div style="height:300px;"></div>
                 <div class="closing-thanks">Atas kehadiran dan do'a restu Bapak/Ibu/Saudara/i, kami ucapkan terimakasih</div>
                 <div class="closing-from">Hormat Kami,</div>
-                <div class="closing-names">Anggri &amp; Syawallani</div>
-                <div class="closing-also">Turut Mengundang:</div>
-                <div class="closing-family">Kel. Bpk. Amril Nurman &amp; Ibu Lismawati<br>Kel. Bpk. Imzir &amp; Ibu Zubaida</div>
+                <div class="closing-names">Anggri &amp; Syawal</div>
+                <!-- <div class="closing-also">Turut Mengundang:</div>
+                <div class="closing-family">Kel. Bpk. Amril Nurman &amp; Ibu Lismawati<br>Kel. Bpk. Imzir &amp; Ibu Zubaida</div> -->
             </div>
         </section>
 
         <!-- =========== FOOTER =========== -->
         <footer class="footer">
-            <div class="footer-title">Anggri &amp; Syawallani E-Invitation</div>
+            <div class="footer-title">Anggri &amp; Syawal E-Invitation</div>
             <div class="footer-text">
                 Made with <span class="footer-heart">♥</span> for a beautiful journey<br>
             </div>
@@ -1451,13 +1593,14 @@
 <!-- =============================================
      NAVBAR BOTTOM
      ============================================= -->
-<nav class="navbar-bottom">
+<nav class="navbar-bottom" aria-label="Navigasi utama">
     <div class="navbar-inner">
-        <div class="nav-item"><a href="#cover-section"><i class="bi bi-file-earmark-text"></i></a></div>
-        <div class="nav-item"><a href="#detail-section"><i class="bi bi-heart"></i></a></div>
-        <div class="nav-item"><a href="#gallery-section"><i class="bi bi-images"></i></a></div>
-        <div class="nav-item"><a href="#gift-section"><i class="bi bi-gift"></i></a></div>
-        <div class="nav-item"><a href="#wish-section"><i class="bi bi-chat-quote"></i></a></div>
+        <div class="nav-item"><a href="#cover-section"><i class="bi bi-house-door"></i><span>Home</span></a></div>
+        <div class="nav-item"><a href="#detail-section"><i class="bi bi-heart"></i><span>Mempelai</span></a></div>
+        <div class="nav-item"><a href="#schedule"><i class="bi bi-calendar-event"></i><span>Acara</span></a></div>
+        <div class="nav-item"><a href="#dresscode"><i class="bi bi-palette"></i><span>Dress</span></a></div>
+        <div class="nav-item"><a href="#gift-section"><i class="bi bi-person-check"></i><span>RSVP</span></a></div>
+        <div class="nav-item"><a href="#gift-section-inner"><i class="bi bi-gift"></i><span>Kado</span></a></div>
     </div>
 </nav>
 
@@ -1651,18 +1794,22 @@
     }
 
     // ========== NAV ACTIVE ==========
-    const sections = document.querySelectorAll('section[id], .cover-section');
     const navLinks = document.querySelectorAll('.nav-item a');
-    window.addEventListener('scroll', () => {
-        let current = '';
-        sections.forEach(s => {
-            if (window.scrollY >= s.offsetTop - 120) current = s.id;
+    function updateNavActive() {
+        const scrollPosition = window.scrollY + 120;
+        let activeLink = navLinks[0];
+
+        navLinks.forEach(link => {
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target && target.getBoundingClientRect().top + window.scrollY <= scrollPosition) {
+                activeLink = link;
+            }
         });
-        navLinks.forEach(a => {
-            a.classList.remove('active');
-            if (a.getAttribute('href') === '#' + current) a.classList.add('active');
-        });
-    });
+
+        navLinks.forEach(link => link.classList.toggle('active', link === activeLink));
+    }
+    window.addEventListener('scroll', updateNavActive, { passive: true });
+    updateNavActive();
 </script>
 
 </body>
