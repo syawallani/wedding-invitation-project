@@ -123,6 +123,16 @@
             if (type) element.classList.add(type);
         }
 
+        async function getFunctionErrorCode(error, data) {
+            if (data?.error) return data.error;
+            if (!error?.context || typeof error.context.clone !== 'function') return '';
+            try {
+                return (await error.context.clone().json())?.error || '';
+            } catch {
+                return '';
+            }
+        }
+
         function showScanner() {
             loginPanel.classList.add('hidden');
             scannerPanel.classList.remove('hidden');
@@ -181,8 +191,16 @@
                 const { data, error } = await supabaseClient.functions.invoke('guest-access', {
                     body: { action: 'lookup', token }
                 });
-                if (error || data?.error || !data?.invitation) {
-                    setStatus(scanStatus, 'Undangan tidak ditemukan atau layanan tidak tersedia.', 'error');
+                const errorCode = await getFunctionErrorCode(error, data);
+                if (error || errorCode || !data?.invitation) {
+                    const message = errorCode === 'invitation_not_found'
+                        ? 'Token QR tidak cocok dengan database. Pastikan CSV hash diimpor dari batch QR yang sama.'
+                        : errorCode === 'origin_not_allowed' || errorCode === 'origin_not_configured'
+                            ? 'Origin situs belum diizinkan. Periksa secret ALLOWED_ORIGINS di Supabase.'
+                            : errorCode
+                                ? `Layanan menolak lookup (${errorCode}). Periksa deployment function dan skema database.`
+                                : 'Tidak dapat menghubungi Edge Function. Periksa deployment, URL proyek, dan koneksi.';
+                    setStatus(scanStatus, message, 'error');
                     return;
                 }
                 const invitation = data.invitation;
