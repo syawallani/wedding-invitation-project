@@ -1908,23 +1908,36 @@
     // ========== RSVP ==========
     async function submitRSVP(attend) {
         if (!supabaseClient || !currentInvitationToken || !currentInvitation) {
-            alert('Undangan pribadi belum tervalidasi. Buka tautan QR yang dikirim kepada Anda.');
+            const status = document.getElementById('rsvpSubmitStatus');
+            status.classList.add('error');
+            status.textContent = 'Undangan belum tervalidasi. Pastikan membuka tautan QR pribadi dan tunggu pemeriksaan selesai.';
             return;
         }
 
         const guestCount = Number(document.getElementById('rsvpPeople').value);
         if (attend && (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > currentInvitation.max_guests)) {
-            alert(`Mohon isi jumlah orang antara 1-${currentInvitation.max_guests}.`);
+            const status = document.getElementById('rsvpSubmitStatus');
+            status.classList.add('error');
+            status.textContent = `Mohon isi jumlah orang antara 1-${currentInvitation.max_guests}.`;
             return;
         }
         if (rsvpSubmitting) return;
         rsvpSubmitting = true;
-        const rsvpButtons = document.querySelectorAll('#modalRSVP button[onclick^="submitRSVP"]');
-        rsvpButtons.forEach(button => button.disabled = true);
+        const attendButton = document.getElementById('rsvpAttendButton');
+        const declineButton = document.getElementById('rsvpDeclineButton');
+        const status = document.getElementById('rsvpSubmitStatus');
+        attendButton.disabled = true;
+        declineButton.disabled = true;
+        status.classList.remove('error', 'success');
+        status.textContent = 'Mengirim konfirmasi kehadiran…';
+        if (attend) {
+            attendButton.innerHTML = '<span class="rsvp-spinner" aria-hidden="true"></span>Mengirim…';
+        } else {
+            declineButton.innerHTML = '<span class="rsvp-spinner" aria-hidden="true"></span>Mengirim…';
+        }
 
-        let response;
         try {
-            response = await supabaseClient.functions.invoke('guest-access', {
+            const { data, error } = await supabaseClient.functions.invoke('guest-access', {
                 body: {
                     action: 'rsvp',
                     token: currentInvitationToken,
@@ -1932,34 +1945,44 @@
                     guest_count: attend ? guestCount : 0
                 }
             });
+            if (error || data?.error || !data?.invitation) {
+                const errorCode = data?.error;
+                console.error('Gagal menyimpan RSVP:', error || errorCode);
+                status.classList.add('error');
+                status.textContent = errorCode === 'already_checked_in'
+                    ? 'RSVP tidak dapat diubah karena undangan ini sudah check-in.'
+                    : `Konfirmasi belum tersimpan${errorCode ? ` (${errorCode})` : error?.message ? ` (${error.message})` : ''}. Coba lagi.`;
+                return;
+            }
+
+            currentInvitation = { ...currentInvitation, ...data.invitation };
+            document.getElementById('invitationQrMeta').textContent = currentInvitation.rsvp_status === 'attending'
+                ? `RSVP hadir · ${currentInvitation.rsvp_guest_count} orang`
+                : 'RSVP tidak hadir';
+
+            document.getElementById('rsvp-success').classList.add('hidden');
+            document.getElementById('rsvp-decline').classList.add('hidden');
+            if (attend) {
+                document.getElementById('rsvp-success').classList.remove('hidden');
+                status.classList.add('success');
+                status.textContent = `Konfirmasi berhasil tersimpan untuk ${currentInvitation.rsvp_guest_count} orang.`;
+            } else {
+                document.getElementById('rsvp-decline').classList.remove('hidden');
+                status.classList.add('success');
+                status.textContent = 'Konfirmasi tidak hadir berhasil tersimpan.';
+            }
+            setTimeout(() => closeModal('modalRSVP'), 2000);
         } catch (error) {
             console.error('Gagal menyimpan RSVP:', error);
-            alert('Konfirmasi belum berhasil disimpan. Silakan coba lagi.');
+            status.classList.add('error');
+            status.textContent = `Tidak dapat menghubungi layanan${error?.message ? ` (${error.message})` : ''}. Periksa koneksi dan coba lagi.`;
+        } finally {
             rsvpSubmitting = false;
-            rsvpButtons.forEach(button => button.disabled = false);
-            return;
+            attendButton.disabled = false;
+            declineButton.disabled = false;
+            attendButton.innerHTML = '✅ Hadir';
+            declineButton.innerHTML = '❌ Tidak Hadir';
         }
-        rsvpSubmitting = false;
-        rsvpButtons.forEach(button => button.disabled = false);
-        const { data, error } = response;
-        if (error || data?.error || !data?.invitation) {
-            console.error('Gagal menyimpan RSVP:', error || data?.error);
-            alert('Konfirmasi belum berhasil disimpan. Silakan coba lagi.');
-            return;
-        }
-        currentInvitation = { ...currentInvitation, ...data.invitation };
-        document.getElementById('invitationQrMeta').textContent = currentInvitation.rsvp_status === 'attending'
-            ? `RSVP hadir · ${currentInvitation.rsvp_guest_count} orang`
-            : 'RSVP tidak hadir';
-
-        document.getElementById('rsvp-success').classList.add('hidden');
-        document.getElementById('rsvp-decline').classList.add('hidden');
-        if (attend) {
-            document.getElementById('rsvp-success').classList.remove('hidden');
-        } else {
-            document.getElementById('rsvp-decline').classList.remove('hidden');
-        }
-        setTimeout(() => closeModal('modalRSVP'), 2000);
     }
 
     // ========== WISHES ==========
