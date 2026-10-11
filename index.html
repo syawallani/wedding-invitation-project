@@ -1173,6 +1173,27 @@
             font-weight: 700; font-size: 14px; cursor: pointer;
             transition: background 0.3s; margin-top: 0.5rem;
         }
+        .rsvp-submit-status {
+            min-height: 1.2rem;
+            margin: 0.2rem 0 0.7rem;
+            color: var(--color-text-light);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .rsvp-submit-status.error { color: #a83224; }
+        .rsvp-submit-status.success { color: #3d6847; }
+        .rsvp-spinner {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 0.45rem;
+            border: 2px solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            vertical-align: -2px;
+            animation: rsvp-spin 0.7s linear infinite;
+        }
+        @keyframes rsvp-spin { to { transform: rotate(360deg); } }
         .alert-box {
             padding: 1rem; border-radius: 10px;
             font-size: 13px; margin-bottom: 1rem;
@@ -1649,8 +1670,9 @@
     <input type="text" class="form-control" id="rsvpName" maxlength="120" placeholder="Nama Anda" autocomplete="name" readonly/>
     <label class="form-label" for="rsvpPeople">Jumlah Orang (maksimal sesuai undangan)</label>
     <input type="number" class="form-control" id="rsvpPeople" value="1" min="1" max="20"/>
-    <button class="btn-primary-full" onclick="submitRSVP(true)">✅ Hadir</button>
-    <button class="btn-danger-full" onclick="submitRSVP(false)">❌ Tidak Hadir</button>
+    <p id="rsvpSubmitStatus" class="rsvp-submit-status" role="status" aria-live="polite"></p>
+    <button id="rsvpAttendButton" class="btn-primary-full" onclick="submitRSVP(true)">✅ Hadir</button>
+    <button id="rsvpDeclineButton" class="btn-danger-full" onclick="submitRSVP(false)">❌ Tidak Hadir</button>
 </div>
 
 <!-- =============================================
