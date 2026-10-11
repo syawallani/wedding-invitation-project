@@ -219,18 +219,29 @@
             const button = event.currentTarget.querySelector('button[type="submit"]');
             button.disabled = true;
             setStatus(loginStatus, 'Memeriksa akun…');
-            const { error } = await supabaseClient.auth.signInWithPassword({
-                email: document.getElementById('email').value.trim(),
-                password: document.getElementById('password').value
-            });
-            button.disabled = false;
-            if (error) {
-                setStatus(loginStatus, 'Login gagal. Periksa email dan password petugas.', 'error');
-                return;
+            try {
+                const { error } = await supabaseClient.auth.signInWithPassword({
+                    email: document.getElementById('email').value.trim(),
+                    password: document.getElementById('password').value
+                });
+                if (error) {
+                    const message = error.code === 'email_not_confirmed'
+                        ? 'Email belum dikonfirmasi. Konfirmasi user di Supabase Authentication → Users.'
+                        : error.code === 'invalid_credentials'
+                            ? 'Email atau password salah. Pastikan user dibuat dengan password, bukan hanya undangan email.'
+                            : `Login gagal (${error.code || error.status || 'Auth'}): ${error.message}`;
+                    setStatus(loginStatus, message, 'error');
+                    return;
+                }
+                document.getElementById('password').value = '';
+                showScanner();
+                setStatus(scanStatus, 'Login berhasil. Arahkan kamera ke QR undangan.');
+            } catch (error) {
+                console.error('Login petugas:', error);
+                setStatus(loginStatus, 'Tidak dapat terhubung ke Supabase Auth. Periksa koneksi internet, URL proyek, anon key, dan origin situs.', 'error');
+            } finally {
+                button.disabled = false;
             }
-            document.getElementById('password').value = '';
-            showScanner();
-            setStatus(scanStatus, 'Login berhasil. Arahkan kamera ke QR undangan.');
         });
 
         document.getElementById('startButton').addEventListener('click', startCamera);
