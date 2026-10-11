@@ -846,6 +846,37 @@
             transition: background 0.3s;
         }
         .btn-rsvp:hover { background: var(--color-muted-sage); }
+        .btn-invitation-qr {
+            width: 100%;
+            margin-top: 0.7rem;
+            padding: 0.8rem;
+            background: transparent;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.65);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .btn-invitation-qr:hover { background: rgba(255,255,255,0.12); }
+        .invitation-qr-panel {
+            margin-top: 1rem;
+            padding: 1.2rem;
+            border-radius: 12px;
+            background: var(--color-bg-light);
+            color: var(--color-dark);
+            text-align: center;
+        }
+        .invitation-qr-panel[hidden] { display: none; }
+        .invitation-qr-name { font-weight: 700; font-size: 15px; }
+        .invitation-qr-meta { margin-top: 0.3rem; color: var(--color-text-light); font-size: 12px; }
+        .invitation-qr-code { width: 184px; min-height: 184px; margin: 0.9rem auto 0; display: grid; place-items: center; background: #fff; }
+        .invitation-qr-code img, .invitation-qr-code canvas { display: block; width: 184px; height: 184px; }
+        .invitation-qr-hint { margin-top: 0.7rem; color: var(--color-text-light); font-size: 11px; }
 
         /* ============================================
            GIFT / KADO
@@ -1469,6 +1500,16 @@
                     <i class="bi bi-person-check-fill"></i>
                     Konfirmasi Kehadiran
                 </button>
+                <button class="btn-invitation-qr" id="toggleInvitationQr" type="button" aria-expanded="false" aria-controls="invitationQrPanel" hidden>
+                    <i class="bi bi-qr-code"></i>
+                    Tampilkan QR Check-in
+                </button>
+                <div class="invitation-qr-panel" id="invitationQrPanel" hidden>
+                    <div class="invitation-qr-name" id="invitationQrName"></div>
+                    <div class="invitation-qr-meta" id="invitationQrMeta"></div>
+                    <div class="invitation-qr-code" id="invitationQrCode" aria-label="QR check-in undangan"></div>
+                    <div class="invitation-qr-hint">Tunjukkan QR ini kepada petugas saat tiba di lokasi.</div>
+                </div>
             </div>
 
             <!-- Gift / Kado -->
@@ -1663,6 +1704,7 @@
      ============================================= -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
     const SUPABASE_URL = 'https://lgsbtyquphlvoahlntsq.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxnc2J0eXF1cGhsdm9haGxudHNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NDU4MjcsImV4cCI6MjEwNzEyMTgyN30.hhNS8oNJWpIfe5xQhE7jVTA_KmZf1DXMMWcUGHJAfSI';
@@ -1673,6 +1715,40 @@
     let currentInvitationToken = '';
     let currentInvitation = null;
     let rsvpSubmitting = false;
+
+    function renderInvitationQr() {
+        if (typeof QRCode === 'undefined') return false;
+        const qrUrl = new URL(window.location.href);
+        qrUrl.search = '';
+        qrUrl.hash = '';
+        qrUrl.searchParams.set('invite', currentInvitationToken);
+        const qrContainer = document.getElementById('invitationQrCode');
+        qrContainer.replaceChildren();
+        new QRCode(qrContainer, {
+            text: qrUrl.href,
+            width: 184,
+            height: 184,
+            colorDark: '#29331d',
+            colorLight: '#ffffff',
+            correctLevel: QRCode.CorrectLevel.M
+        });
+        return true;
+    }
+
+    document.getElementById('toggleInvitationQr').addEventListener('click', function () {
+        const panel = document.getElementById('invitationQrPanel');
+        const isOpening = panel.hidden;
+        if (isOpening && !renderInvitationQr()) {
+            document.getElementById('invitationQrMeta').textContent = 'QR tidak dapat dimuat. Periksa koneksi internet lalu coba lagi.';
+            panel.hidden = false;
+        } else {
+            panel.hidden = !isOpening;
+        }
+        this.setAttribute('aria-expanded', String(isOpening));
+        this.innerHTML = isOpening
+            ? '<i class="bi bi-eye-slash"></i> Sembunyikan QR Check-in'
+            : '<i class="bi bi-qr-code"></i> Tampilkan QR Check-in';
+    });
 
     // ========== INIT ==========
     window.addEventListener('DOMContentLoaded', function () {
@@ -1798,6 +1874,11 @@
         peopleInput.value = currentInvitation.rsvp_status === 'attending'
             ? currentInvitation.rsvp_guest_count
             : 1;
+        document.getElementById('invitationQrName').textContent = currentInvitation.guest_name;
+        document.getElementById('invitationQrMeta').textContent = currentInvitation.rsvp_status === 'attending'
+            ? `RSVP hadir · ${currentInvitation.rsvp_guest_count} orang`
+            : currentInvitation.rsvp_status === 'declined' ? 'RSVP tidak hadir' : 'RSVP belum dijawab';
+        document.getElementById('toggleInvitationQr').hidden = false;
         status.textContent = `Undangan valid · maksimal ${currentInvitation.max_guests} orang.`;
         rsvpButtons.forEach(button => button.disabled = false);
     }
@@ -1845,6 +1926,9 @@
             return;
         }
         currentInvitation = { ...currentInvitation, ...data.invitation };
+        document.getElementById('invitationQrMeta').textContent = currentInvitation.rsvp_status === 'attending'
+            ? `RSVP hadir · ${currentInvitation.rsvp_guest_count} orang`
+            : 'RSVP tidak hadir';
 
         document.getElementById('rsvp-success').classList.add('hidden');
         document.getElementById('rsvp-decline').classList.add('hidden');
