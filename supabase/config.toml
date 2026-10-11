@@ -1,0 +1,2 @@
+[functions.guest-access]
+verify_jwt = false

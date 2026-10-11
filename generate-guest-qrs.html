@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Buat kartu QR check-in tamu Anggri & Syawal.">
+    <title>QR Tamu | Anggri &amp; Syawal</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+            --paper: #f5f3ea;
+            --white: #fffefa;
+            --ink: #29331d;
+            --olive: #4a5c28;
+            --sage: #8fa060;
+            --line: #d4dbc3;
+            --muted: #707760;
+            --rust: #a94b36;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            color: var(--ink);
+            background: var(--paper);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+        }
+        .topline { height: 6px; background: var(--olive); }
+        header {
+            max-width: 1160px;
+            margin: auto;
+            padding: 30px 30px 25px;
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 24px;
+            border-bottom: 1px solid var(--line);
+        }
+        .eyebrow { color: var(--sage); font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+        h1, h2, .ticket-couple { font-family: 'Cormorant Garamond', Georgia, serif; }
+        h1 { margin: 5px 0 0; font-size: 40px; line-height: 1; font-weight: 600; }
+        .event-date { color: var(--muted); font-size: 12px; }
+        main {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: minmax(280px, 350px) minmax(0, 1fr);
+            gap: 38px;
+            align-items: start;
+        }
+        .controls { position: sticky; top: 18px; }
+        .section-kicker { margin: 0 0 18px; color: var(--olive); font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; }
+        label { display: block; margin: 19px 0 7px; font-size: 12px; font-weight: 700; }
+        input, textarea {
+            width: 100%;
+            border: 1px solid #bdc7a9;
+            border-radius: 4px;
+            padding: 12px 13px;
+            background: var(--white);
+            color: var(--ink);
+            font: inherit;
+            outline: none;
+        }
+        input:focus, textarea:focus { border-color: var(--olive); box-shadow: 0 0 0 2px #4a5c281c; }
+        textarea { min-height: 170px; resize: vertical; line-height: 1.65; }
+        .format-note { margin: 7px 0 0; color: var(--muted); font-size: 11px; line-height: 1.55; }
+        .button-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+        button {
+            min-height: 42px;
+            border: 1px solid var(--olive);
+            border-radius: 4px;
+            padding: 0 14px;
+            background: var(--olive);
+            color: white;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        button:hover { background: #38471e; }
+        button:disabled { cursor: wait; opacity: .55; }
+        button.secondary { background: transparent; color: var(--olive); }
+        button.secondary:hover { background: #e8eadf; }
+        .privacy-note { margin: 22px 0 0; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.6; }
+        .privacy-note i { margin-right: 5px; color: var(--olive); }
+        .output-head { min-height: 40px; display: flex; align-items: start; justify-content: space-between; gap: 12px; }
+        .output-head h2 { margin: 0; font-size: 26px; font-weight: 600; }
+        .count { color: var(--muted); font-size: 12px; padding-top: 9px; }
+        .status { min-height: 22px; margin: 4px 0 16px; color: var(--muted); font-size: 12px; }
+        .status.error { color: var(--rust); }
+        .ticket-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+        .ticket {
+            position: relative;
+            min-width: 0;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 118px;
+            gap: 12px;
+            align-items: center;
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 4px;
+            background: var(--white);
+            animation: reveal .35s ease both;
+        }
+        .ticket::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background: var(--sage); }
+        .ticket-label { color: var(--sage); font-size: 9px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; }
+        .ticket-name { overflow-wrap: anywhere; margin: 6px 0; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 25px; line-height: 1.05; }
+        .ticket-couple { margin-top: 10px; color: var(--olive); font-size: 15px; }
+        .ticket-limit { margin-top: 8px; color: var(--muted); font-size: 10px; }
+        .qr { width: 108px; height: 108px; display: grid; place-items: center; background: white; }
+        .qr canvas, .qr img { display: block; width: 108px; height: 108px; }
+        .ticket-action { grid-column: 1 / -1; justify-self: start; min-height: 31px; padding: 0 9px; font-size: 10px; }
+        .empty-state { border-top: 1px solid var(--line); padding: 26px 0; color: var(--muted); font-size: 13px; }
+        @keyframes reveal { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 760px) {
+            header { padding: 24px 20px 19px; align-items: start; flex-direction: column; gap: 8px; }
+            h1 { font-size: 34px; }
+            main { padding: 22px 20px; grid-template-columns: 1fr; gap: 34px; }
+            .controls { position: static; }
+        }
+        @media (max-width: 500px) {
+            .ticket-grid { grid-template-columns: 1fr; }
+            .ticket { grid-template-columns: minmax(0, 1fr) 108px; padding: 15px; }
+        }
+        @media print {
+            @page { size: A4; margin: 12mm; }
+            body { background: white; }
+            .topline, header, .controls, .output-head, .status, .ticket-action { display: none !important; }
+            main { display: block; max-width: none; padding: 0; }
+            .ticket-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8mm; }
+            .ticket { min-height: 53mm; border-color: #aeb79b; break-inside: avoid; animation: none; }
+            .ticket-name { font-size: 22px; }
+        }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="topline"></div>
+    <header>
+        <div>
+            <div class="eyebrow">Undangan pribadi · QR check-in</div>
+            <h1>Anggri &amp; Syawal</h1>
+        </div>
+        <div class="event-date">01 Juni 2027 · Mang Kabayan Lippo Cikarang</div>
+    </header>
+    <main>
+        <section class="controls" aria-labelledby="generator-title">
+            <p class="section-kicker" id="generator-title">Daftar tamu</p>
+            <label for="invitationUrl">URL undangan yang sudah dipublikasikan</label>
+            <input id="invitationUrl" type="url" placeholder="https://domain-anda.com/index.html" autocomplete="url" required>
+            <label for="guestInput">Nama tamu · satu per baris</label>
+            <textarea id="guestInput" placeholder="Keluarga Bapak A; 3&#10;Ibu B; 1" spellcheck="false"></textarea>
+            <p class="format-note">Tambahkan titik koma dan jumlah maksimal untuk keluarga, misalnya <strong>Nama Tamu; 3</strong>. Jika kosong, batasnya 1 orang.</p>
+            <div class="button-row">
+                <button id="generateButton" type="button"><i class="bi bi-qr-code"></i> Buat QR</button>
+                <button id="printButton" class="secondary" type="button" disabled><i class="bi bi-printer"></i> Cetak kartu</button>
+            </div>
+            <div class="button-row">
+                <button id="databaseButton" class="secondary" type="button" disabled><i class="bi bi-database-down"></i> CSV untuk Supabase</button>
+                <button id="linksButton" class="secondary" type="button" disabled><i class="bi bi-link-45deg"></i> CSV tautan tamu</button>
+            </div>
+            <p class="privacy-note"><i class="bi bi-shield-lock"></i> Token dibuat di browser ini. CSV tautan/QR bersifat pribadi. Database hanya menerima hash token.</p>
+        </section>
+        <section aria-labelledby="output-title">
+            <div class="output-head">
+                <h2 id="output-title">Kartu QR tamu</h2>
+                <span class="count" id="guestCount">0 tamu</span>
+            </div>
+            <p class="status" id="status" role="status" aria-live="polite">Masukkan URL undangan dan daftar nama untuk membuat kartu.</p>
+            <div class="ticket-grid" id="ticketGrid"></div>
+        </section>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        const guestInput = document.getElementById('guestInput');
+        const invitationUrlInput = document.getElementById('invitationUrl');
+        const ticketGrid = document.getElementById('ticketGrid');
+        const statusElement = document.getElementById('status');
+        const guestCount = document.getElementById('guestCount');
+        const generateButton = document.getElementById('generateButton');
+        const printButton = document.getElementById('printButton');
+        const databaseButton = document.getElementById('databaseButton');
+        const linksButton = document.getElementById('linksButton');
+        let guests = [];
+
+        function csvCell(value) {
+            return '"' + String(value).replaceAll('"', '""') + '"';
+        }
+
+        function downloadCsv(filename, rows) {
+            const content = '\ufeff' + rows.map(row => row.map(csvCell).join(',')).join('\r\n');
+            const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }));
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+
+        function createToken() {
+            const bytes = crypto.getRandomValues(new Uint8Array(32));
+            let binary = '';
+            bytes.forEach(byte => binary += String.fromCharCode(byte));
+            return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/, '');
+        }
+
+        async function hashToken(token) {
+            const bytes = new TextEncoder().encode(token);
+            const digest = await crypto.subtle.digest('SHA-256', bytes);
+            return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        function parseGuests() {
+            return guestInput.value.split(/\r?\n/).map(line => line.trim()).filter(Boolean).map((line, index) => {
+                const splitAt = line.lastIndexOf(';');
+                let name = line;
+                let maxGuests = 1;
+                if (splitAt > 0 && /^\s*\d+\s*$/.test(line.slice(splitAt + 1))) {
+                    name = line.slice(0, splitAt).trim();
+                    maxGuests = Number(line.slice(splitAt + 1).trim());
+                }
+                if (!name || name.length > 120) throw new Error(`Nama pada baris ${index + 1} harus berisi 1-120 karakter.`);
+                if (!Number.isInteger(maxGuests) || maxGuests < 1 || maxGuests > 20) throw new Error(`Batas tamu pada baris ${index + 1} harus antara 1-20.`);
+                return { name, maxGuests };
+            });
+        }
+
+        function createInvitationUrl(baseUrl, guest) {
+            const url = new URL(baseUrl);
+            url.searchParams.set('invite', guest.token);
+            url.searchParams.set('to', guest.name);
+            return url.href;
+        }
+
+        function renderGuest(guest, index) {
+            const card = document.createElement('article');
+            card.className = 'ticket';
+            card.style.animationDelay = `${Math.min(index * 35, 350)}ms`;
+
+            const detail = document.createElement('div');
+            const label = document.createElement('div');
+            label.className = 'ticket-label';
+            label.textContent = 'Undangan pribadi';
+            const name = document.createElement('h3');
+            name.className = 'ticket-name';
+            name.textContent = guest.name;
+            const couple = document.createElement('div');
+            couple.className = 'ticket-couple';
+            couple.textContent = 'Anggri & Syawal';
+            const limit = document.createElement('div');
+            limit.className = 'ticket-limit';
+            limit.textContent = `Maksimal ${guest.maxGuests} orang · QR check-in`;
+            detail.append(label, name, couple, limit);
+
+            const qr = document.createElement('div');
+            qr.className = 'qr';
+            const qrUrl = createInvitationUrl(invitationUrlInput.value.trim(), guest);
+            new QRCode(qr, { text: qrUrl, width: 108, height: 108, colorDark: '#29331d', colorLight: '#ffffff', correctLevel: QRCode.CorrectLevel.M });
+            const downloadButton = document.createElement('button');
+            downloadButton.type = 'button';
+            downloadButton.className = 'ticket-action secondary';
+            downloadButton.innerHTML = '<i class="bi bi-download" aria-hidden="true"></i> Unduh QR';
+            downloadButton.addEventListener('click', () => downloadQr(guest, qr));
+            card.append(detail, qr, downloadButton);
+            ticketGrid.append(card);
+        }
+
+        function downloadQr(guest, qrElement) {
+            const canvas = qrElement.querySelector('canvas');
+            const image = qrElement.querySelector('img');
+            const dataUrl = canvas ? canvas.toDataURL('image/png') : image?.src;
+            if (!dataUrl) return;
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = `qr-${guest.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.png`;
+            link.click();
+        }
+
+        function setStatus(message, isError = false) {
+            statusElement.textContent = message;
+            statusElement.classList.toggle('error', isError);
+        }
+
+        generateButton.addEventListener('click', async () => {
+            if (!window.isSecureContext || !crypto?.subtle) {
+                setStatus('Buka halaman ini melalui HTTPS atau localhost agar token aman dapat dibuat.', true);
+                return;
+            }
+            let baseUrl;
+            let entries;
+            try {
+                baseUrl = new URL(invitationUrlInput.value.trim());
+                if (baseUrl.protocol !== 'https:' && baseUrl.hostname !== 'localhost') throw new Error('URL undangan harus menggunakan HTTPS.');
+                entries = parseGuests();
+                if (!entries.length) throw new Error('Masukkan minimal satu nama tamu.');
+                if (entries.length > 500) throw new Error('Buat maksimal 500 QR dalam satu proses.');
+            } catch (error) {
+                setStatus(error.message || 'Periksa URL dan daftar tamu.', true);
+                return;
+            }
+            if (typeof QRCode === 'undefined') {
+                setStatus('Library QR tidak berhasil dimuat. Periksa koneksi internet lalu muat ulang halaman.', true);
+                return;
+            }
+
+            generateButton.disabled = true;
+            setStatus('Membuat token dan QR…');
+            try {
+                const created = await Promise.all(entries.map(async entry => {
+                    const token = createToken();
+                    return { ...entry, token, tokenHash: await hashToken(token) };
+                }));
+                guests = created;
+                ticketGrid.replaceChildren();
+                guests.forEach(renderGuest);
+                guestCount.textContent = `${guests.length} tamu`;
+                printButton.disabled = false;
+                databaseButton.disabled = false;
+                linksButton.disabled = false;
+                setStatus(`${guests.length} QR siap. Unduh CSV database dan simpan data tautan tamu secara privat.`);
+            } catch (error) {
+                guests = [];
+                setStatus('Gagal membuat QR. Pastikan halaman dibuka melalui HTTPS atau localhost.', true);
+            } finally {
+                generateButton.disabled = false;
+            }
+        });
+
+        printButton.addEventListener('click', () => window.print());
+        databaseButton.addEventListener('click', () => {
+            downloadCsv('guest-invitations-import.csv', [
+                ['guest_name', 'max_guests', 'token_hash'],
+                ...guests.map(guest => [guest.name, guest.maxGuests, guest.tokenHash])
+            ]);
+        });
+        linksButton.addEventListener('click', () => {
+            downloadCsv('guest-invitation-links-private.csv', [
+                ['guest_name', 'invite_url'],
+                ...guests.map(guest => [guest.name, createInvitationUrl(invitationUrlInput.value.trim(), guest)])
+            ]);
+        });
+    </script>
+</body>
+</html>

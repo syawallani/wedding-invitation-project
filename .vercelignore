@@ -1,0 +1,14 @@
+# Private QR generation tool; run locally, never serve it to guests
+/generate-guest-qrs.html
+
+# Supabase schema, local config, and Edge Function source deploy separately
+/supabase/**
+/supabase-schema.sql
+
+# Local setup documentation
+/SUPABASE_SETUP.md
+
+# Local CLI dependency manifests; not needed for static hosting
+/package.json
+/package-lock.json
+/node_modules/**

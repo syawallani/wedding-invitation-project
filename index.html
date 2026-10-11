@@ -1385,7 +1385,7 @@
                         <div class="event-date">Senin, 01 Juni 2027 | 26 Djulhijjah 1448 H</div>
                         <div class="event-venue">Mang Kabayan Lippo Cikarang</div>
                         <div class="event-address">Jl. Gn. Tangkuban Perahu, Cibatu, Cikarang Sel.</div>
-                        <a href="https://maps.google.com" target="_blank" class="btn-map">
+                        <a href="https://maps.app.goo.gl/ufpjq5F6fd2LGZ4N8" target="_blank" class="btn-map">
                             <i class="bi bi-geo-alt-fill"></i> Navigasi Map
                         </a>
                         <a href="https://calendar.google.com/calendar/event?action=TEMPLATE&text=Anggri+Liani+%26+Syawallani&dates=20270601T020000Z/20270601T050000Z&location=Mang+Kabayan+Lippo+Cikarang" target="_blank" class="btn-map">
@@ -1496,30 +1496,14 @@
             </div>
             <div class="wish-form-card" data-aos="fade-up">
                 <div class="wish-form-title">Ucapan &amp; Doa</div>
-                <input type="text" class="wish-input" id="wishName" placeholder="Nama Anda"/>
-                <textarea class="wish-textarea" id="wishText" placeholder="Tulis ucapan &amp; doa"></textarea>
+                <input type="text" class="wish-input" id="wishName" placeholder="Nama Anda" maxlength="120"/>
+                <textarea class="wish-textarea" id="wishText" placeholder="Tulis ucapan &amp; doa" maxlength="2000"></textarea>
                 <button class="btn-wish" onclick="submitWish()">
                     <i class="bi bi-chat-heart-fill"></i>
                     Kirim Ucapan
                 </button>
             </div>
             <div class="wish-list" id="wishList">
-                <!-- Sample wishes -->
-                <div class="wish-item">
-                    <div class="wish-name">Melissa</div>
-                    <div class="wish-time"><i class="bi bi-clock-history"></i> Minggu, 27 Oktober 2024</div>
-                    <div class="wish-text">Selamat ya! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah 💚</div>
-                </div>
-                <div class="wish-item">
-                    <div class="wish-name">Citra Kusuma</div>
-                    <div class="wish-time"><i class="bi bi-clock-history"></i> Senin, 11 Agustus 2025</div>
-                    <div class="wish-text">Selamat ya. Semoga bahagia selalu sampai kakek nenek ❤️</div>
-                </div>
-                <div class="wish-item">
-                    <div class="wish-name">Arya &amp; Keluarga</div>
-                    <div class="wish-time"><i class="bi bi-clock-history"></i> Sabtu, 28 Desember 2025</div>
-                    <div class="wish-text">Barakallah... Semoga menjadi pasangan yang selalu dalam lindungan Allah 🌿</div>
-                </div>
             </div>
         </section>
 
@@ -1619,8 +1603,11 @@
     <div id="rsvp-decline" class="alert-box alert-danger hidden">
         <strong>Terimakasih!</strong> Kami memahami kesibukan Anda. Doa &amp; restu Anda sangat berarti bagi kami.
     </div>
-    <label class="form-label">Jumlah Orang</label>
-    <input type="number" class="form-control" id="rsvpPeople" value="1" min="1"/>
+    <p id="rsvpInviteStatus" role="status" style="font-size:12px;color:var(--color-medium);margin:0 0 0.8rem;"></p>
+    <label class="form-label" for="rsvpName">Nama</label>
+    <input type="text" class="form-control" id="rsvpName" maxlength="120" placeholder="Nama Anda" autocomplete="name" readonly/>
+    <label class="form-label" for="rsvpPeople">Jumlah Orang (maksimal sesuai undangan)</label>
+    <input type="number" class="form-control" id="rsvpPeople" value="1" min="1" max="20"/>
     <button class="btn-primary-full" onclick="submitRSVP(true)">✅ Hadir</button>
     <button class="btn-danger-full" onclick="submitRSVP(false)">❌ Tidak Hadir</button>
 </div>
@@ -1675,7 +1662,18 @@
      SCRIPTS
      ============================================= -->
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+    const SUPABASE_URL = 'https://lgsbtyquphlvoahlntsq.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxnc2J0eXF1cGhsdm9haGxudHNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NDU4MjcsImV4cCI6MjEwNzEyMTgyN30.hhNS8oNJWpIfe5xQhE7jVTA_KmZf1DXMMWcUGHJAfSI';
+    const supabaseClient = SUPABASE_URL && SUPABASE_ANON_KEY
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+        : null;
+    let currentGuestName = '';
+    let currentInvitationToken = '';
+    let currentInvitation = null;
+    let rsvpSubmitting = false;
+
     // ========== INIT ==========
     window.addEventListener('DOMContentLoaded', function () {
         // Hide preloader
@@ -1686,9 +1684,14 @@
 
         // Parse guest from URL
         const params = new URLSearchParams(window.location.search);
-        const guest = params.get('to') || params.get('tamu') || 'Tamu Undangan';
+        currentGuestName = params.get('to') || params.get('tamu') || '';
+        currentInvitationToken = params.get('invite') || '';
+        const guest = currentGuestName || 'Tamu Undangan';
         document.getElementById('modal-guest').textContent = guest;
         document.getElementById('cover-guest').textContent = guest;
+        document.getElementById('rsvpName').value = currentGuestName;
+        loadGuestInvitation();
+        loadWishes();
 
         // Show modal splash
         document.getElementById('modalInvitation').style.opacity = '1';
@@ -1761,8 +1764,88 @@
         navigator.clipboard.writeText(text).then(() => alert('Nomor rekening disalin: ' + text));
     }
 
+    async function loadGuestInvitation() {
+        const status = document.getElementById('rsvpInviteStatus');
+        const rsvpButtons = document.querySelectorAll('#modalRSVP button[onclick^="submitRSVP"]');
+        if (!currentInvitationToken) {
+            status.textContent = 'Buka undangan melalui tautan QR pribadi untuk mengonfirmasi kehadiran.';
+            rsvpButtons.forEach(button => button.disabled = true);
+            return;
+        }
+        if (!supabaseClient) {
+            status.textContent = 'Layanan undangan belum tersedia. Silakan hubungi keluarga mempelai.';
+            rsvpButtons.forEach(button => button.disabled = true);
+            return;
+        }
+
+        status.textContent = 'Memeriksa undangan…';
+        const { data, error } = await supabaseClient.functions.invoke('guest-access', {
+            body: { action: 'lookup', token: currentInvitationToken }
+        });
+        if (error || data?.error || !data?.invitation) {
+            status.textContent = 'Tautan undangan tidak valid atau tidak dapat diperiksa.';
+            rsvpButtons.forEach(button => button.disabled = true);
+            return;
+        }
+
+        currentInvitation = data.invitation;
+        currentGuestName = currentInvitation.guest_name;
+        document.getElementById('modal-guest').textContent = currentGuestName;
+        document.getElementById('cover-guest').textContent = currentGuestName;
+        document.getElementById('rsvpName').value = currentGuestName;
+        const peopleInput = document.getElementById('rsvpPeople');
+        peopleInput.max = currentInvitation.max_guests;
+        peopleInput.value = currentInvitation.rsvp_status === 'attending'
+            ? currentInvitation.rsvp_guest_count
+            : 1;
+        status.textContent = `Undangan valid · maksimal ${currentInvitation.max_guests} orang.`;
+        rsvpButtons.forEach(button => button.disabled = false);
+    }
+
     // ========== RSVP ==========
-    function submitRSVP(attend) {
+    async function submitRSVP(attend) {
+        if (!supabaseClient || !currentInvitationToken || !currentInvitation) {
+            alert('Undangan pribadi belum tervalidasi. Buka tautan QR yang dikirim kepada Anda.');
+            return;
+        }
+
+        const guestCount = Number(document.getElementById('rsvpPeople').value);
+        if (attend && (!Number.isInteger(guestCount) || guestCount < 1 || guestCount > currentInvitation.max_guests)) {
+            alert(`Mohon isi jumlah orang antara 1-${currentInvitation.max_guests}.`);
+            return;
+        }
+        if (rsvpSubmitting) return;
+        rsvpSubmitting = true;
+        const rsvpButtons = document.querySelectorAll('#modalRSVP button[onclick^="submitRSVP"]');
+        rsvpButtons.forEach(button => button.disabled = true);
+
+        let response;
+        try {
+            response = await supabaseClient.functions.invoke('guest-access', {
+                body: {
+                    action: 'rsvp',
+                    token: currentInvitationToken,
+                    attending: attend,
+                    guest_count: attend ? guestCount : 0
+                }
+            });
+        } catch (error) {
+            console.error('Gagal menyimpan RSVP:', error);
+            alert('Konfirmasi belum berhasil disimpan. Silakan coba lagi.');
+            rsvpSubmitting = false;
+            rsvpButtons.forEach(button => button.disabled = false);
+            return;
+        }
+        rsvpSubmitting = false;
+        rsvpButtons.forEach(button => button.disabled = false);
+        const { data, error } = response;
+        if (error || data?.error || !data?.invitation) {
+            console.error('Gagal menyimpan RSVP:', error || data?.error);
+            alert('Konfirmasi belum berhasil disimpan. Silakan coba lagi.');
+            return;
+        }
+        currentInvitation = { ...currentInvitation, ...data.invitation };
+
         document.getElementById('rsvp-success').classList.add('hidden');
         document.getElementById('rsvp-decline').classList.add('hidden');
         if (attend) {
@@ -1774,23 +1857,69 @@
     }
 
     // ========== WISHES ==========
-    function submitWish() {
+    async function submitWish() {
         const name = document.getElementById('wishName').value.trim();
         const text = document.getElementById('wishText').value.trim();
         if (!name || !text) { alert('Mohon isi nama dan ucapan Anda'); return; }
+        if (!supabaseClient) {
+            alert('Supabase belum dikonfigurasi. Isi SUPABASE_URL dan SUPABASE_ANON_KEY terlebih dahulu.');
+            return;
+        }
 
-        const list = document.getElementById('wishList');
-        const now = new Date().toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        const item = document.createElement('div');
-        item.className = 'wish-item';
-        item.innerHTML = `
-            <div class="wish-name">${name}</div>
-            <div class="wish-time"><i class="bi bi-clock-history"></i> ${now}</div>
-            <div class="wish-text">${text}</div>
-        `;
-        list.insertBefore(item, list.firstChild);
+        const { data, error } = await supabaseClient
+            .from('wishes')
+            .insert({ guest_name: name, message: text })
+            .select('id, guest_name, message, created_at')
+            .single();
+        if (error) {
+            console.error('Gagal menyimpan ucapan:', error);
+            alert('Ucapan belum berhasil disimpan. Silakan coba lagi.');
+            return;
+        }
+
+        renderWish(data, true);
         document.getElementById('wishName').value = '';
         document.getElementById('wishText').value = '';
+    }
+
+    async function loadWishes() {
+        if (!supabaseClient) return;
+        const { data, error } = await supabaseClient
+            .from('wishes')
+            .select('id, guest_name, message, created_at')
+            .order('created_at', { ascending: false })
+            .limit(100);
+        if (error) {
+            console.error('Gagal memuat ucapan:', error);
+            return;
+        }
+
+        const list = document.getElementById('wishList');
+        list.replaceChildren();
+        data.forEach(wish => renderWish(wish));
+    }
+
+    function renderWish(wish, prepend = false) {
+        const list = document.getElementById('wishList');
+        const date = new Date(wish.created_at).toLocaleDateString('id-ID', {
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+        });
+        const item = document.createElement('div');
+        item.className = 'wish-item';
+        const name = document.createElement('div');
+        name.className = 'wish-name';
+        name.textContent = wish.guest_name;
+        const time = document.createElement('div');
+        time.className = 'wish-time';
+        const icon = document.createElement('i');
+        icon.className = 'bi bi-clock-history';
+        time.append(icon, document.createTextNode(` ${date}`));
+        const message = document.createElement('div');
+        message.className = 'wish-text';
+        message.textContent = wish.message;
+        item.append(name, time, message);
+        if (prepend) list.prepend(item);
+        else list.append(item);
     }
 
     // ========== NAV ACTIVE ==========

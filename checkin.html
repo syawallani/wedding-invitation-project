@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f3ea">
+    <title>Check-in Tamu | Anggri &amp; Syawal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --paper:#f5f3ea; --white:#fffefa; --ink:#29331d; --olive:#4a5c28; --sage:#8fa060; --line:#d4dbc3; --muted:#707760; --red:#9a392a; --green:#3d6847; }
+        * { box-sizing:border-box; }
+        body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); font:14px 'DM Sans',sans-serif; }
+        .topline { height:6px; background:var(--olive); }
+        header { max-width:900px; margin:auto; padding:26px 24px; border-bottom:1px solid var(--line); display:flex; align-items:end; justify-content:space-between; gap:16px; }
+        .eyebrow { color:var(--sage); font-size:10px; font-weight:700; letter-spacing:1.7px; text-transform:uppercase; }
+        h1,h2,h3 { font-family:'Cormorant Garamond',Georgia,serif; }
+        h1 { margin:4px 0 0; font-size:38px; font-weight:600; line-height:1; }
+        .event-date { color:var(--muted); font-size:11px; text-align:right; }
+        main { width:min(100% - 32px,560px); margin:34px auto; }
+        .panel { padding:24px; border:1px solid var(--line); border-radius:4px; background:var(--white); }
+        h2 { margin:0 0 17px; font-size:25px; font-weight:600; }
+        label { display:block; margin:15px 0 6px; font-size:12px; font-weight:700; }
+        input { width:100%; height:44px; border:1px solid #bdc7a9; border-radius:4px; padding:0 12px; background:white; color:var(--ink); font:inherit; }
+        input:focus { outline:2px solid #8fa06066; border-color:var(--olive); }
+        button { min-height:42px; border:1px solid var(--olive); border-radius:4px; padding:0 14px; background:var(--olive); color:white; font:inherit; font-size:12px; font-weight:700; cursor:pointer; }
+        button:hover { background:#38471e; }
+        button:disabled { opacity:.55; cursor:wait; }
+        button.secondary { color:var(--olive); background:transparent; }
+        button.secondary:hover { background:#e8eadf; }
+        .actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:16px; }
+        .hidden { display:none !important; }
+        .status { min-height:22px; margin:13px 0 0; color:var(--muted); font-size:12px; line-height:1.5; }
+        .status.error { color:var(--red); }
+        .status.success { color:var(--green); }
+        #reader { width:100%; max-width:440px; margin:4px auto 0; overflow:hidden; }
+        #reader video { border-radius:4px; }
+        .guest-result { margin-top:20px; padding:18px; border-left:4px solid var(--sage); background:#f1f2e9; }
+        .guest-result h3 { margin:0 0 7px; font-size:28px; line-height:1; overflow-wrap:anywhere; }
+        .guest-result p { margin:5px 0; color:var(--muted); font-size:12px; }
+        .guest-result .result-state { margin-top:12px; color:var(--olive); font-size:13px; font-weight:700; }
+        .divider { margin:19px 0 0; padding-top:15px; border-top:1px solid var(--line); }
+        @media (max-width:520px) {
+            header { align-items:start; flex-direction:column; padding:21px 18px; }
+            h1 { font-size:34px; }
+            .event-date { text-align:left; }
+            main { margin:20px auto; }
+            .panel { padding:18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="topline"></div>
+    <header>
+        <div>
+            <div class="eyebrow">Petugas · akses terbatas</div>
+            <h1>Anggri &amp; Syawal</h1>
+        </div>
+        <div class="event-date">Check-in tamu · 01 Juni 2027</div>
+    </header>
+    <main>
+        <section class="panel" id="loginPanel" aria-labelledby="loginTitle">
+            <h2 id="loginTitle">Login Petugas</h2>
+            <form id="loginForm">
+                <label for="email">Email petugas</label>
+                <input id="email" type="email" autocomplete="username" required>
+                <label for="password">Password</label>
+                <input id="password" type="password" autocomplete="current-password" required>
+                <div class="actions"><button type="submit">Masuk</button></div>
+            </form>
+            <p class="status" id="loginStatus" role="status" aria-live="polite">Akun petugas harus dibuat di Supabase dan dimasukkan ke daftar petugas.</p>
+        </section>
+
+        <section class="panel hidden" id="scannerPanel" aria-labelledby="scannerTitle">
+            <h2 id="scannerTitle">Scan undangan</h2>
+            <div class="actions" style="margin-top:0;">
+                <button id="startButton" type="button">Buka kamera</button>
+                <button id="logoutButton" class="secondary" type="button">Keluar</button>
+            </div>
+            <div id="reader"></div>
+            <p class="status" id="scanStatus" role="status" aria-live="polite">Arahkan kamera ke QR pada undangan.</p>
+            <div class="divider">
+                <label for="manualToken">Atau masukkan token undangan</label>
+                <input id="manualToken" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Token pada tautan QR">
+                <div class="actions"><button id="manualButton" class="secondary" type="button">Cari undangan</button></div>
+            </div>
+            <div id="guestResult" class="guest-result hidden" aria-live="polite">
+                <h3 id="guestName"></h3>
+                <p id="guestLimit"></p>
+                <p id="guestRsvp"></p>
+                <p id="guestCheckedIn"></p>
+                <div class="result-state" id="resultState"></div>
+                <div class="actions">
+                    <button id="checkInButton" type="button" class="hidden">Konfirmasi check-in</button>
+                    <button id="nextButton" type="button" class="secondary hidden">Scan tamu berikutnya</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <script>
+        const SUPABASE_URL = 'https://lgsbtyquphlvoahlntsq.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imxnc2J0eXF1cGhsdm9haG5udHNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE1NDU4MjcsImV4cCI6MjEwNzEyMTgyN30.hhNS8oNJWpIfe5xQhE7jVTA_KmZf1DXMMWcUGHJAfSI';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const loginPanel = document.getElementById('loginPanel');
+        const scannerPanel = document.getElementById('scannerPanel');
+        const loginStatus = document.getElementById('loginStatus');
+        const scanStatus = document.getElementById('scanStatus');
+        const guestResult = document.getElementById('guestResult');
+        const checkInButton = document.getElementById('checkInButton');
+        const nextButton = document.getElementById('nextButton');
+        let scanner = null;
+        let currentToken = '';
+        let cameraRunning = false;
+        let requestRunning = false;
+
+        function setStatus(element, message, type = '') {
+            element.textContent = message;
+            element.classList.remove('error', 'success');
+            if (type) element.classList.add(type);
+        }
+
+        function showScanner() {
+            loginPanel.classList.add('hidden');
+            scannerPanel.classList.remove('hidden');
+        }
+
+        async function stopCamera() {
+            if (!scanner || !cameraRunning) return;
+            try { await scanner.stop(); } catch (error) { console.warn('Camera stop:', error); }
+            cameraRunning = false;
+        }
+
+        async function startCamera() {
+            if (!window.isSecureContext) {
+                setStatus(scanStatus, 'Kamera memerlukan HTTPS atau localhost. Gunakan input token manual jika diperlukan.', 'error');
+                return;
+            }
+            if (typeof Html5Qrcode === 'undefined') {
+                setStatus(scanStatus, 'Library scanner tidak termuat. Periksa koneksi internet.', 'error');
+                return;
+            }
+            if (!scanner) scanner = new Html5Qrcode('reader');
+            try {
+                await scanner.start({ facingMode: 'environment' }, { fps: 10, qrbox: { width: 230, height: 230 } }, async (decodedText) => {
+                    await stopCamera();
+                    await lookupGuest(decodedText);
+                });
+                cameraRunning = true;
+                setStatus(scanStatus, 'Kamera aktif. Arahkan ke QR undangan.');
+            } catch (error) {
+                setStatus(scanStatus, 'Kamera tidak dapat dibuka. Izinkan akses kamera atau masukkan token manual.', 'error');
+            }
+        }
+
+        function tokenFromValue(value) {
+            const trimmed = value.trim();
+            try {
+                const url = new URL(trimmed);
+                return url.searchParams.get('invite') || '';
+            } catch {
+                return /^[A-Za-z0-9_-]{43}$/.test(trimmed) ? trimmed : '';
+            }
+        }
+
+        async function lookupGuest(value) {
+            if (requestRunning) return;
+            const token = tokenFromValue(value);
+            if (!token) {
+                setStatus(scanStatus, 'QR atau token tidak valid.', 'error');
+                return;
+            }
+            requestRunning = true;
+            currentToken = token;
+            guestResult.classList.add('hidden');
+            setStatus(scanStatus, 'Memeriksa undangan…');
+            try {
+                const { data, error } = await supabaseClient.functions.invoke('guest-access', {
+                    body: { action: 'lookup', token }
+                });
+                if (error || data?.error || !data?.invitation) {
+                    setStatus(scanStatus, 'Undangan tidak ditemukan atau layanan tidak tersedia.', 'error');
+                    return;
+                }
+                const invitation = data.invitation;
+                document.getElementById('guestName').textContent = invitation.guest_name;
+                document.getElementById('guestLimit').textContent = `Batas undangan: ${invitation.max_guests} orang`;
+                document.getElementById('guestRsvp').textContent = invitation.rsvp_status === 'attending'
+                    ? `RSVP: hadir · ${invitation.rsvp_guest_count} orang`
+                    : invitation.rsvp_status === 'declined' ? 'RSVP: tidak hadir' : 'RSVP: belum dijawab';
+                document.getElementById('guestCheckedIn').textContent = `Sudah check-in: ${invitation.checked_in_count} orang`;
+                guestResult.classList.remove('hidden');
+                checkInButton.classList.add('hidden');
+                nextButton.classList.remove('hidden');
+                if (invitation.rsvp_status !== 'attending') {
+                    document.getElementById('resultState').textContent = 'Belum dapat check-in: RSVP belum menyatakan hadir.';
+                    setStatus(scanStatus, 'Periksa status RSVP tamu.', 'error');
+                } else if (invitation.checked_in_count >= invitation.rsvp_guest_count) {
+                    document.getElementById('resultState').textContent = 'Undangan ini sudah digunakan untuk check-in.';
+                    setStatus(scanStatus, 'Check-in sebelumnya sudah tercatat.', 'error');
+                } else {
+                    document.getElementById('resultState').textContent = 'Periksa nama dan jumlah sebelum mencatat kehadiran.';
+                    checkInButton.classList.remove('hidden');
+                    setStatus(scanStatus, 'Undangan ditemukan.', 'success');
+                }
+            } catch (error) {
+                console.error('Lookup undangan:', error);
+                setStatus(scanStatus, 'Tidak dapat menghubungi layanan. Periksa koneksi internet.', 'error');
+            } finally {
+                requestRunning = false;
+            }
+        }
+
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = event.currentTarget.querySelector('button[type="submit"]');
+            button.disabled = true;
+            setStatus(loginStatus, 'Memeriksa akun…');
+            const { error } = await supabaseClient.auth.signInWithPassword({
+                email: document.getElementById('email').value.trim(),
+                password: document.getElementById('password').value
+            });
+            button.disabled = false;
+            if (error) {
+                setStatus(loginStatus, 'Login gagal. Periksa email dan password petugas.', 'error');
+                return;
+            }
+            document.getElementById('password').value = '';
+            showScanner();
+            setStatus(scanStatus, 'Login berhasil. Arahkan kamera ke QR undangan.');
+        });
+
+        document.getElementById('startButton').addEventListener('click', startCamera);
+        document.getElementById('manualButton').addEventListener('click', () => lookupGuest(document.getElementById('manualToken').value));
+        document.getElementById('manualToken').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') lookupGuest(event.currentTarget.value);
+        });
+        checkInButton.addEventListener('click', async () => {
+            if (!currentToken || requestRunning) return;
+            requestRunning = true;
+            checkInButton.disabled = true;
+            setStatus(scanStatus, 'Mencatat check-in…');
+            try {
+                const { data, error } = await supabaseClient.functions.invoke('guest-access', {
+                    body: { action: 'checkin', token: currentToken }
+                });
+                if (error || data?.error || data?.result !== 'checked_in') {
+                    const message = data?.error === 'staff_not_allowed'
+                        ? 'Akun ini belum diberi hak check-in.'
+                        : data?.result === 'already_checked_in' ? 'Check-in sudah tercatat sebelumnya.' : 'Check-in gagal. Periksa hak petugas dan koneksi.';
+                    setStatus(scanStatus, message, 'error');
+                    return;
+                }
+                document.getElementById('guestCheckedIn').textContent = `Sudah check-in: ${data.invitation.checked_in_count} orang`;
+                document.getElementById('resultState').textContent = 'Check-in berhasil dicatat.';
+                checkInButton.classList.add('hidden');
+                nextButton.classList.remove('hidden');
+                setStatus(scanStatus, 'Check-in berhasil.', 'success');
+            } catch (error) {
+                console.error('Check-in:', error);
+                setStatus(scanStatus, 'Tidak dapat mencatat check-in. Periksa koneksi.', 'error');
+            } finally {
+                requestRunning = false;
+                checkInButton.disabled = false;
+            }
+        });
+        nextButton.addEventListener('click', async () => {
+            guestResult.classList.add('hidden');
+            document.getElementById('manualToken').value = '';
+            currentToken = '';
+            setStatus(scanStatus, 'Siap memeriksa tamu berikutnya.');
+            if (cameraRunning) return;
+            if (scanner) await startCamera();
+        });
+        document.getElementById('logoutButton').addEventListener('click', async () => {
+            await stopCamera();
+            await supabaseClient.auth.signOut();
+            scannerPanel.classList.add('hidden');
+            loginPanel.classList.remove('hidden');
+            setStatus(loginStatus, 'Anda sudah keluar.');
+        });
+
+        supabaseClient.auth.getSession().then(({ data }) => {
+            if (data.session) showScanner();
+        });
+    </script>
+</body>
+</html>
